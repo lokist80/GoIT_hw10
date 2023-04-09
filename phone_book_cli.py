@@ -95,22 +95,29 @@ def handle_errors(func):
 
 @handle_errors
 def command_parse(prompt: str):
+    global new_phone, name_1, old_phone, name_2
     commands = ('add', 'change', 'del', 'show', 'phone')
     prompt_list = prompt.strip().replace(',', '').replace('.', '').split()
     command = prompt_list.pop(0)
     if not prompt_list or command not in commands:
         raise ValueError('Check your command')
 
+    name_0 = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
+    try:
+        new_phone = Phone(prompt_list[-1])
+        name_1 = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-1]))))
+        old_phone = Phone(prompt_list[-2])
+        name_2 = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-2]))))
+    except IndexError:
+        pass
+
     if command == 'add':
         if len(prompt_list) >= 2 \
                 and prompt_list[-1].isdigit() \
                 and len(prompt_list[-1]) in (10, 11):
-            phone = Phone(prompt_list.pop(-1))
-            name = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
-            if phone:
-                return add(name, phone)
-        name = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
-        return add(name)
+            if new_phone:
+                return add(name_1, new_phone)
+        return add(name_0)
 
     elif command == 'change':
         if len(prompt_list) >= 3 \
@@ -118,21 +125,14 @@ def command_parse(prompt: str):
                 and prompt_list[-2].isdigit() \
                 and len(prompt_list[-1]) in (10, 11) \
                 and len(prompt_list[-2]) in (10, 11):
-            old_phone = Phone(prompt_list.pop(-2))
-            new_phone = Phone(prompt_list.pop(-1))
-            name = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
-            return change(name, old_phone, new_phone)
+            return change(name_2, old_phone, new_phone)
 
     elif command == 'del':
         if len(prompt_list) >= 2 \
                 and prompt_list[-1].isdigit() \
                 and len(prompt_list[-1]) in (10, 11):
-            phone = Phone(prompt_list.pop(-1))
-            name = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
-            return delete_phone(name, phone)
-        if len(prompt_list) >= 1:
-            name = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
-            return delete_contact(name)
+            return delete_phone(name_1, new_phone)
+        return delete_contact(name_0)
 
     elif command == 'show':
         if len(prompt_list) == 1 and prompt_list[-1] == 'all':
@@ -140,8 +140,7 @@ def command_parse(prompt: str):
 
     elif command == 'phone':
         if len(prompt_list) >= 1:
-            name = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
-            return view_phones_by_name(name)
+            return view_phones_by_name(name_0)
 
     raise ValueError('Check your command')
 
