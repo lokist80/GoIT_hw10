@@ -153,10 +153,10 @@ def add(name: Name, phone: Phone = None):
             ab.add_record(rec)
             return f'Contact {name} created'
         return f'Contact {name} already exist'
-    if keys:  # чи існує в нашому екземплярі AddressBook запис з ключем name.value
-        keys.add_phone(phone)  # Додати новий телефон
+    if keys:
+        keys.add_phone(phone)
         return f'Phone {phone} added to record {name}'
-    ab.add_record(Record(name, phone))  # Иначе - добавить имя и номер
+    ab.add_record(Record(name, phone))
     return f'Contact {name} created with phone {phone}'
 
 
