@@ -102,12 +102,12 @@ def command_parse(prompt: str):
     if not prompt_list or command not in commands:
         raise ValueError('Check your command')
 
-    name_0 = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list))))
+    name_0 = ' '.join(list(map(lambda i: i.capitalize(), prompt_list)))
     try:
-        new_phone = Phone(prompt_list[-1])
-        name_1 = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-1]))))
-        old_phone = Phone(prompt_list[-2])
-        name_2 = Name(' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-2]))))
+        new_phone = prompt_list[-1]
+        name_1 = ' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-1])))
+        old_phone = prompt_list[-2]
+        name_2 = ' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-2])))
     except IndexError:
         pass
 
@@ -145,22 +145,23 @@ def command_parse(prompt: str):
     raise ValueError('Check your command')
 
 
-def add(name: Name, phone: Phone = None):
-    keys = ab.get(name.value)
+def add(name, phone=None):
+    keys = ab.get(Name(name).value)
     if not phone:
         if not keys:
-            rec = Record(name)
+            rec = Record(Name(name))
             ab.add_record(rec)
             return f'Contact {name} created'
         return f'Contact {name} already exist'
     if keys:
-        keys.add_phone(phone)
+        keys.add_phone(Phone(phone))
         return f'Phone {phone} added to record {name}'
-    ab.add_record(Record(name, phone))
+    ab.add_record(Record(Name(name), Phone(phone)))
     return f'Contact {name} created with phone {phone}'
 
 
-def view_phones_by_name(name: Name):
+def view_phones_by_name(name):
+    name = Name(name)
     keys = ab.get(name.value)
     if keys:
         return ''.join([f'{k} : {"; ".join([p.value for p in v.phones])}' for k, v in ab.items()
@@ -168,23 +169,24 @@ def view_phones_by_name(name: Name):
     return f'Contact {name} doesn\'t exist'
 
 
-def change(name: Name, old_phone: Phone, new_phone: Phone):
-    keys = ab.get(name.value)
+def change(name, old_phone, new_phone):
+    keys = ab.get(Name(name).value)
     if keys:
-        keys.change_phone(old_phone, new_phone)
+        keys.change_phone(Phone(old_phone), Phone(new_phone))
         return f'Phone {old_phone} was changed to {new_phone} for {name}'
     return f'Contact {name} doesn\'t exist'
 
 
-def delete_phone(name: Name, phone: Phone):
-    keys = ab.get(name.value)
+def delete_phone(name, phone):
+    keys = ab.get(Name(name).value)
     if keys:
-        keys.del_phone(phone)
+        keys.del_phone(Phone(phone))
         return f'Phone {phone} deleted for record {name}'
     return f'Contact {name} doesn\'t exist'
 
 
-def delete_contact(name: Name):
+def delete_contact(name):
+    name = Name(name)
     keys = ab.get(name.value)
     if keys:
         confirm = input('Are you sure? (Y/n)\n>>> ').lower()
@@ -194,7 +196,7 @@ def delete_contact(name: Name):
             rec = Record(name)
             ab.del_record(rec)
             return f'Contact {name} was completely removed'
-        return 'Aborted'
+        return 'Operation canceled'
     return f'Contact {name} doesn\'t exist'
 
 
