@@ -102,12 +102,12 @@ def command_parse(prompt: str):
     if not prompt_list or command not in commands:
         raise ValueError('Check your command')
 
-    name_0 = ' '.join(list(map(lambda i: i.capitalize(), prompt_list)))
+    name_0 = ' '.join(list(map(str.capitalize, prompt_list)))
     try:
         new_phone = prompt_list[-1]
-        name_1 = ' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-1])))
+        name_1 = ' '.join(list(map(str.capitalize, prompt_list[:-1])))
         old_phone = prompt_list[-2]
-        name_2 = ' '.join(list(map(lambda i: i.capitalize(), prompt_list[:-2])))
+        name_2 = ' '.join(list(map(str.capitalize, prompt_list[:-2])))
     except IndexError:
         pass
 
